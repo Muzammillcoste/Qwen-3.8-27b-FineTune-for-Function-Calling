@@ -1,44 +1,49 @@
-# QLoRA starting suggestions copied from master spec H1.
-# STATUS: UNVERIFIED against any pinned TRL/PEFT/transformers version. Phase 3 must map these to
-# real API arguments; do not pass keys blindly. No training is permitted before Phase 3/4 approval.
+# QLoRA configuration — Phase 3A (approved 2026-10-18). Mapped to REAL APIs:
+# transformers 5.18.0 / peft 0.21.2 / bitsandbytes 0.50.2 / accelerate 1.15.0 (see src/tooldistill/train.py).
+# The values below are what train.TrainConfig uses; changing them changes the experiment.
 model_name: Qwen/Qwen3-4B-Instruct-2507
-# Observed via HF API metadata 2026-10-18 (no weights downloaded): cdbee75f17c01a7cc42f958dc650907174af0554
-model_revision: PIN_AFTER_DOWNLOAD
+model_revision: cdbee75f17c01a7cc42f958dc650907174af0554   # pinned; weights downloaded ONLY on Kaggle
 seed: 42
 method: qlora_sft
-quantization:
+hardware: one Kaggle T4 (CUDA_VISIBLE_DEVICES=0); no multi-GPU
+quantization:            # transformers.BitsAndBytesConfig
   load_in_4bit: true
   bnb_4bit_quant_type: nf4
   bnb_4bit_use_double_quant: true
-  bnb_4bit_compute_dtype: bfloat16_if_supported_else_float16
-lora:
+  bnb_4bit_compute_dtype: float16     # T4 (sm_75) has no bf16
+lora:                    # peft.LoraConfig
   r: 8
   alpha: 16
   dropout: 0.05
-  target_modules: all-linear   # verify module names; exclude output head
-training:
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]  # lm_head excluded
+  trainable_dtype: float32            # required by the fp16 GradScaler
+training:                # transformers.TrainingArguments
   per_device_train_batch_size: 1
   gradient_accumulation_steps: 8
   learning_rate: 0.0001
   num_train_epochs: 1
-  max_seq_length: 1024
-  gradient_checkpointing: true
-  optimizer: paged_adamw_8bit
+  max_seq_length: 1536                # longer records are ineligible (never truncated)
+  gradient_checkpointing: true        # non-reentrant
+  optim: paged_adamw_8bit
   lr_scheduler_type: cosine
-  warmup_ratio: 0.03
-  save_steps: 100
-  logging_steps: 10
-  eval_strategy: steps_or_epoch_as_supported_by_pinned_trl
-  packing: false
-  mixed_precision: auto
-  completion_only_loss: true
+  warmup_steps: 0.03                  # v5 API: float in [0,1) = ratio
+  max_grad_norm: 1.0
+  fp16: true
+  bf16: false
+  save_steps: 5                       # pilot; full arms: revisit after pilot timing
+  logging_steps: 1
+  completion_only_loss: true          # labels = -100 on prompt + padding (format_qwen)
+  attn_implementation: sdpa           # no FlashAttention-2 on sm_75
 pilot:
   n_examples: 100
+  interrupt_at_step: 6                # simulated session end -> resume test
   stop_if:
     cuda_oom: true
+    non_finite_loss_or_grad: true
     broken_label_mask: true
-    unintended_truncation_rate_gt: 0.05
+    unintended_truncation: any        # over-length records are excluded, never truncated
 inference:
   do_sample: false
   max_new_tokens: 256
   batch_size: 1
+  stop_tokens: ["<|im_end|>", "<|endoftext|>"]

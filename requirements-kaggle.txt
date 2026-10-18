@@ -1,14 +1,15 @@
-# Kaggle GPU runtime requirements — NOT YET PINNED.
-# Phase 0 status: no compatibility check has been run on Kaggle. Do not install blindly.
-# Phase 3 must: (1) inspect preinstalled Kaggle versions, (2) test TRL/PEFT/transformers/bitsandbytes
-# API compatibility with the pinned Qwen tokenizer template, (3) pin exact versions here,
-# (4) never upgrade mid-study.
-#
-# transformers==TBD
-# trl==TBD
-# peft==TBD
-# bitsandbytes==TBD
-# accelerate==TBD
-# datasets==TBD
-PyYAML
-jsonschema
+# Kaggle GPU runtime (Phase 3A). Exact pins, installed BEFORE any import in the notebook.
+# torch is NOT reinstalled: Kaggle's preinstalled CUDA build is used and its version is recorded
+# by the preflight (bitsandbytes 0.50.2 requires torch>=2.4,<3).
+# Chosen versions were released >= 2 weeks before 2026-10-18 where possible and tested locally
+# (CPU) together: transformers 5.18.0 + peft 0.21.2 + accelerate 1.15.0 + tokenizers 0.23.3.
+transformers==5.18.0
+tokenizers==0.23.3
+huggingface_hub==1.33.0   # <2.0 for Kaggle preinstalled datasets/gradio/diffusers; transformers needs >=1.31
+safetensors==0.8.0
+peft==0.21.2
+accelerate==1.15.0
+bitsandbytes==0.50.2
+jsonschema==4.26.0
+PyYAML==6.0.3
+Jinja2==3.1.6

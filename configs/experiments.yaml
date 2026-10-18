@@ -1,14 +1,16 @@
 # Experiment matrix — Option A framing (approved 2026-10-18): data selection, diversity, coverage
 # and quantity. Each run = independent LoRA adapter from the same frozen base. Never chain adapters
 # or carry optimizer state between runs. No run has been executed.
-# Primary pool: TRAIN ∩ single-call ∩ non-duplicate. Final matrix is decided at the Phase 2 gate.
+# Primary pool: TRAIN ∩ single-call ∩ non-duplicate ∩ rendered <= 1536 tokens (approved 2026-10-18).
+# Scope: single-call only. No claim of multi-turn tool use or no-tool (abstention) decisions.
 runs:
   base_0:               {n_train: 0,    rule: untuned base,                                status: planned, priority: 1}
   pilot_100:            {n_train: 100,  rule: feasibility pilot (not a finding),           status: planned, priority: 1}
-  random_1k:            {n_train: 1000, rule: stratified random, nested in random_3k,      status: planned, priority: 2}
-  diversity_1k:         {n_train: 1000, rule: stratified greedy coverage,                  status: planned, priority: 2}
-  random_3k:            {n_train: 3000, rule: stratified random,                           status: planned, priority: 3}
-  schema_consistent_1k: {n_train: 1000, rule: random_1k order skipping schema-inconsistent, status: pending_gate, priority: 4}
+  random_1k:            {n_train: 1000, rule: stratified random, nested in random_3k,      status: planned_primary, priority: 2}
+  diversity_1k:         {n_train: 1000, rule: stratified greedy coverage,                  status: planned_primary, priority: 2}
+  random_3k:            {n_train: 3000, rule: stratified random,                           status: follow_up, priority: 3}
+  random_1k_x3ep:       {n_train: 1000, rule: random_1k for 3 epochs (compute-matched to 3k), status: follow_up, priority: 3}
+  schema_consistent_1k: {n_train: 1000, rule: random_1k order skipping schema-inconsistent, status: dropped_gate_failed_4.3pct, priority: null}  # manifest kept
 deferred:
   label_noise_ablation: Option B — controlled label noise; NOT implemented, needs separate approval
 seeds:

@@ -1,0 +1,482 @@
+{
+ "mode": "phase3a",
+ "phase": "3A",
+ "note": "Feasibility only. Pilot metrics are NOT experimental findings.",
+ "preflight": {
+  "python": "3.13.15",
+  "platform": "Linux-6.18.48+-x86_64-with-glibc2.39",
+  "packages": {
+   "torch": "2.11.0+cu128",
+   "transformers": "5.18.0",
+   "peft": "0.21.2",
+   "accelerate": "1.15.0",
+   "bitsandbytes": "0.50.2",
+   "tokenizers": "0.23.3",
+   "huggingface_hub": "1.33.0",
+   "safetensors": "0.8.0",
+   "jsonschema": "4.26.0",
+   "PyYAML": "6.0.3",
+   "Jinja2": "3.1.6"
+  },
+  "nvidia_smi": "Sun Oct 18 18:10:09 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 580.178.04             Driver Version: 580.178.04     CUDA Version: 13.0     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  Tesla T4                       Off |   00000000:00:04.0 Off |                    0 |\n| N/A   62C    P0             30W /   70W |     107MiB /  15360MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n|   1  Tesla T4                       Off |   00000000:00:05.0 Off |                    0 |\n| N/A   44C    P8             11W /   70W |       0MiB /  15360MiB |      0%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A              49      C   /usr/bin/python3                        104MiB |\n+-----------------------------------------------------------------------------------------+\n",
+  "ram_gb": 32.9,
+  "disk_free_gb": 20.9,
+  "cuda_available": true,
+  "device_count_visible": 1,
+  "gpu_name": "Tesla T4",
+  "compute_capability": "7.5",
+  "gpu_total_gb": 15.64,
+  "gpu_free_gb": 15.52,
+  "bf16_supported": true,
+  "status": "ok"
+ },
+ "train_config": {
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.05,
+  "learning_rate": 0.0001,
+  "epochs": 1,
+  "per_device_batch": 1,
+  "grad_accum": 8,
+  "warmup_ratio": 0.03,
+  "max_grad_norm": 1.0,
+  "max_seq_len": 1536,
+  "seed": 42,
+  "save_steps": 5,
+  "logging_steps": 1,
+  "optim_gpu": "paged_adamw_8bit",
+  "optim_cpu": "adamw_torch"
+ },
+ "data_checks": {
+  "chat_template_sha256": "64f85b198065d0fba2a81f37e10ed68161ce2c19a754c7100e67e0ca2ee9c326",
+  "pilot_examples": 100,
+  "pilot_prompt_tokens": 53253,
+  "pilot_supervised_tokens": 3601,
+  "supervised_fraction": 0.0633,
+  "example_supervised_text": "<tool_call>\n{\"name\": \"project_investment_growth\", \"arguments\": {\"annual_addition\": 2000, \"inflation\": \"[0.02] * 10\", \"principal\": 10000, \"return_rate\": 0.05, \"years\": 10}}\n</tool_call><|im_end|>",
+  "eval_prompt_equals_train_prefix": true
+ },
+ "model_load": {
+  "seconds": 48.4,
+  "vram_after_load_gb": 2.653
+ },
+ "format_check": {
+  "eval_version": "eval-v1",
+  "n": 20,
+  "exact_structured_call_accuracy": {
+   "k": 17,
+   "n": 20,
+   "rate": 0.85
+  },
+  "parse_rate": {
+   "k": 20,
+   "n": 20,
+   "rate": 1.0
+  },
+  "tool_name_accuracy": {
+   "k": 20,
+   "n": 20,
+   "rate": 1.0
+  },
+  "schema_valid_prediction_rate": {
+   "k": 20,
+   "n": 20,
+   "rate": 1.0
+  },
+  "hallucinated_tool_rate": {
+   "k": 0,
+   "n": 20,
+   "rate": 0.0
+  },
+  "argument_value_accuracy": {
+   "k": 29,
+   "n": 32,
+   "rate": 0.9062
+  },
+  "text_outside_blocks_rate": {
+   "k": 0,
+   "n": 20,
+   "rate": 0.0
+  },
+  "error_categories": {
+   "correct": 17,
+   "wrong_argument_values": 2,
+   "wrong_argument_keys": 1
+  },
+  "generation": {
+   "batch_size": 1,
+   "new_tokens": 729,
+   "seconds": 62.86,
+   "new_tokens_per_s": 11.6,
+   "seconds_per_example": 3.143,
+   "hit_max_new_tokens": 0
+  }
+ },
+ "baseline_val100": {
+  "eval_version": "eval-v1",
+  "n": 100,
+  "exact_structured_call_accuracy": {
+   "k": 82,
+   "n": 100,
+   "rate": 0.82
+  },
+  "parse_rate": {
+   "k": 98,
+   "n": 100,
+   "rate": 0.98
+  },
+  "tool_name_accuracy": {
+   "k": 98,
+   "n": 100,
+   "rate": 0.98
+  },
+  "schema_valid_prediction_rate": {
+   "k": 97,
+   "n": 100,
+   "rate": 0.97
+  },
+  "hallucinated_tool_rate": {
+   "k": 0,
+   "n": 100,
+   "rate": 0.0
+  },
+  "argument_value_accuracy": {
+   "k": 166,
+   "n": 184,
+   "rate": 0.9022
+  },
+  "text_outside_blocks_rate": {
+   "k": 2,
+   "n": 100,
+   "rate": 0.02
+  },
+  "error_categories": {
+   "correct": 82,
+   "wrong_argument_values": 12,
+   "wrong_argument_keys": 4,
+   "no_tool_call": 2
+  },
+  "generation": {
+   "batch_size": 1,
+   "new_tokens": 3605,
+   "seconds": 306.8,
+   "new_tokens_per_s": 11.75,
+   "seconds_per_example": 3.068,
+   "hit_max_new_tokens": 0
+  }
+ },
+ "lora": {
+  "trainable": 16515072,
+  "total": 2222325248,
+  "trainable_dtypes": [
+   "torch.float32"
+  ],
+  "lm_head_trainable": false
+ },
+ "pilot_training": {
+  "interrupted_at_step": 6,
+  "resumed_to_step": 13,
+  "max_steps": 13,
+  "checkpoint_files_at_interrupt": [
+   "README.md",
+   "adapter_config.json",
+   "adapter_model.safetensors",
+   "optimizer.pt",
+   "rng_state.pth",
+   "scaler.pt",
+   "scheduler.pt",
+   "trainer_state.json",
+   "training_args.bin"
+  ],
+  "resume_restored_optimizer_scheduler_rng": true,
+  "part1": {
+   "global_step": 6,
+   "max_steps": 13,
+   "tokens_seen_non_padding": 25262,
+   "wall_seconds": 102.39,
+   "train_loss": 0.044993980399643384,
+   "steps": [
+    {
+     "step": 1,
+     "step_seconds": 16.928,
+     "tokens": 4361,
+     "tokens_per_s": 257.6,
+     "peak_vram_gb": 6.555,
+     "peak_reserved_gb": 7.044,
+     "loss": 0.07040952146053314,
+     "grad_norm": 1.5818939208984375,
+     "learning_rate": 0.0
+    },
+    {
+     "step": 2,
+     "step_seconds": 16.143,
+     "tokens": 4208,
+     "tokens_per_s": 260.7,
+     "peak_vram_gb": 6.567,
+     "peak_reserved_gb": 7.08,
+     "loss": 0.12314662337303162,
+     "grad_norm": 1.5208404064178467,
+     "learning_rate": 0.0001
+    },
+    {
+     "step": 3,
+     "step_seconds": 22.561,
+     "tokens": 5277,
+     "tokens_per_s": 233.9,
+     "peak_vram_gb": 7.58,
+     "peak_reserved_gb": 8.338,
+     "loss": 0.03968114033341408,
+     "grad_norm": 0.6618050932884216,
+     "learning_rate": 9.829629131445342e-05
+    },
+    {
+     "step": 4,
+     "step_seconds": 11.752,
+     "tokens": 2990,
+     "tokens_per_s": 254.4,
+     "peak_vram_gb": 7.58,
+     "peak_reserved_gb": 8.34,
+     "loss": 0.0044118305668234825,
+     "grad_norm": 0.3510267734527588,
+     "learning_rate": 9.330127018922194e-05
+    },
+    {
+     "step": 5,
+     "step_seconds": 20.519,
+     "tokens": 5119,
+     "tokens_per_s": 249.5,
+     "peak_vram_gb": 7.58,
+     "peak_reserved_gb": 8.34,
+     "loss": 0.0009123687632381916,
+     "grad_norm": 0.13419131934642792,
+     "learning_rate": 8.535533905932738e-05
+    },
+    {
+     "step": 6,
+     "step_seconds": 12.809,
+     "tokens": 3307,
+     "tokens_per_s": 258.2,
+     "peak_vram_gb": 7.58,
+     "peak_reserved_gb": 8.34,
+     "loss": 0.03140239790081978,
+     "grad_norm": 1.7400903701782227,
+     "learning_rate": 7.500000000000001e-05
+    }
+   ],
+   "peak_vram_allocated_gb": 7.58,
+   "peak_vram_reserved_gb": 8.34
+  },
+  "part2": {
+   "global_step": 13,
+   "max_steps": 13,
+   "tokens_seen_non_padding": 56954,
+   "wall_seconds": 132.47,
+   "train_loss": 0.06871424801647663,
+   "steps": [
+    {
+     "step": 7,
+     "step_seconds": 22.929,
+     "tokens": 5624,
+     "tokens_per_s": 245.3,
+     "peak_vram_gb": 8.241,
+     "peak_reserved_gb": 8.676,
+     "loss": 0.19678260385990143,
+     "grad_norm": 1.5659030675888062,
+     "learning_rate": 6.294095225512603e-05
+    },
+    {
+     "step": 8,
+     "step_seconds": 16.15,
+     "tokens": 3990,
+     "tokens_per_s": 247.1,
+     "peak_vram_gb": 8.241,
+     "peak_reserved_gb": 8.676,
+     "loss": 0.03354790434241295,
+     "grad_norm": 2.095270872116089,
+     "learning_rate": 5e-05
+    },
+    {
+     "step": 9,
+     "step_seconds": 26.617,
+     "tokens": 6442,
+     "tokens_per_s": 242.0,
+     "peak_vram_gb": 8.549,
+     "peak_reserved_gb": 9.305,
+     "loss": 0.10038555413484573,
+     "grad_norm": 0.7330570220947266,
+     "learning_rate": 3.705904774487396e-05
+    },
+    {
+     "step": 10,
+     "step_seconds": 12.404,
+     "tokens": 3202,
+     "tokens_per_s": 258.1,
+     "peak_vram_gb": 8.549,
+     "peak_reserved_gb": 9.305,
+     "loss": 0.03895076364278793,
+     "grad_norm": 0.6513251066207886,
+     "learning_rate": 2.500000000000001e-05
+    },
+    {
+     "step": 11,
+     "step_seconds": 14.81,
+     "tokens": 3604,
+     "tokens_per_s": 243.3,
+     "peak_vram_gb": 8.606,
+     "peak_reserved_gb": 9.349,
+     "loss": 0.02647886984050274,
+     "grad_norm": 0.4762282073497772,
+     "learning_rate": 1.4644660940672627e-05
+    },
+    {
+     "step": 12,
+     "step_seconds": 22.854,
+     "tokens": 5435,
+     "tokens_per_s": 237.8,
+     "peak_vram_gb": 8.606,
+     "peak_reserved_gb": 9.349,
+     "loss": 0.20267440378665924,
+     "grad_norm": 1.6584314107894897,
+     "learning_rate": 6.698729810778065e-06
+    },
+    {
+     "step": 13,
+     "step_seconds": 14.547,
+     "tokens": 3395,
+     "tokens_per_s": 233.4,
+     "peak_vram_gb": 9.003,
+     "peak_reserved_gb": 9.748,
+     "loss": 0.2944651246070862,
+     "grad_norm": 1.8973608016967773,
+     "learning_rate": 1.70370868554659e-06
+    }
+   ],
+   "peak_vram_allocated_gb": 9.003,
+   "peak_vram_reserved_gb": 9.748
+  },
+  "measured": {
+   "optimizer_steps": 13,
+   "non_padding_tokens": 56954,
+   "train_seconds_excl_eval": 231.0,
+   "tokens_per_s": 246.5,
+   "mean_step_seconds": 17.77,
+   "peak_vram_allocated_gb": 9.003,
+   "peak_vram_reserved_gb": 9.748,
+   "losses": [
+    0.07040952146053314,
+    0.12314662337303162,
+    0.03968114033341408,
+    0.0044118305668234825,
+    0.0009123687632381916,
+    0.03140239790081978,
+    0.19678260385990143,
+    0.03354790434241295,
+    0.10038555413484573,
+    0.03895076364278793,
+    0.02647886984050274,
+    0.20267440378665924,
+    0.2944651246070862
+   ],
+   "grad_norms": [
+    1.5818939208984375,
+    1.5208404064178467,
+    0.6618050932884216,
+    0.3510267734527588,
+    0.13419131934642792,
+    1.7400903701782227,
+    1.5659030675888062,
+    2.095270872116089,
+    0.7330570220947266,
+    0.6513251066207886,
+    0.4762282073497772,
+    1.6584314107894897,
+    1.8973608016967773
+   ]
+  }
+ },
+ "adapter_reload": {
+  "ok": true,
+  "adapter_files": [
+   "README.md",
+   "adapter_config.json",
+   "adapter_model.safetensors"
+  ]
+ },
+ "pilot_val100": {
+  "eval_version": "eval-v1",
+  "n": 100,
+  "exact_structured_call_accuracy": {
+   "k": 77,
+   "n": 100,
+   "rate": 0.77
+  },
+  "parse_rate": {
+   "k": 98,
+   "n": 100,
+   "rate": 0.98
+  },
+  "tool_name_accuracy": {
+   "k": 98,
+   "n": 100,
+   "rate": 0.98
+  },
+  "schema_valid_prediction_rate": {
+   "k": 97,
+   "n": 100,
+   "rate": 0.97
+  },
+  "hallucinated_tool_rate": {
+   "k": 0,
+   "n": 100,
+   "rate": 0.0
+  },
+  "argument_value_accuracy": {
+   "k": 164,
+   "n": 184,
+   "rate": 0.8913
+  },
+  "text_outside_blocks_rate": {
+   "k": 2,
+   "n": 100,
+   "rate": 0.02
+  },
+  "error_categories": {
+   "correct": 77,
+   "wrong_argument_values": 14,
+   "wrong_argument_keys": 7,
+   "no_tool_call": 2
+  },
+  "generation": {
+   "batch_size": 1,
+   "new_tokens": 3609,
+   "seconds": 523.62,
+   "new_tokens_per_s": 6.89,
+   "seconds_per_example": 5.236,
+   "hit_max_new_tokens": 0
+  }
+ },
+ "paired_base_vs_pilot": {
+  "both_correct": 77,
+  "only_first": 5,
+  "only_second": 0,
+  "neither": 18,
+  "discordant": 5,
+  "mcnemar_exact_p": 0.0625
+ },
+ "projections": {
+  "basis": "pilot train 246.5 non-pad tokens/s; 3.07 s/example generation (batch 1)",
+  "training_hours": {
+   "random_1k (1 ep)": 0.62,
+   "diversity_1k (1 ep)": 0.63,
+   "random_3k (1 ep)": 1.88,
+   "random_1k x3 ep (compute-matched)": 1.87
+  },
+  "eval_hours_per_model": {
+   "100": 0.09,
+   "1000": 0.85,
+   "2813": 2.4
+  }
+ },
+ "total_wall_minutes": 19.9,
+ "status": "phase3a_done"
+}

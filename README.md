@@ -17,8 +17,8 @@ The canonical specification is [ToolDistill_Lab_Codex_Master_Spec_v2_Existing_Da
 |---|---|---|
 | 0 | Scaffold, normalization/validation/provenance/dedup/split code, fixtures, tests, docs | done (approved) |
 | 1 | Authorized download, full integrity, three-state requiredness, dedup, split, data audit | done (accepted; branch `research/phase1-audit`) |
-| 2 | Single-call pool, chat-template lengths, candidate subsets, blinded audit design, eval/training plans | **done; awaiting human review** (`reports/phase2_selection.md`) |
-| 3 | Kaggle export, preflight, 100-example pilot | not started |
+| 2 | Single-call pool, chat-template lengths, candidate subsets, blinded audit design, eval/training plans | done (approved with changes) |
+| 3A | Kaggle feasibility: notebook, QLoRA pilot, baseline on 100 val | **built; Kaggle run pending** (`docs/KAGGLE_GUIDE.md` §3) |
 | 4 | Approved adapter runs | not started |
 | 5 | Evaluation and report | not started |
 

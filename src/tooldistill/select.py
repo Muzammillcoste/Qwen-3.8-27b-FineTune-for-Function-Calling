@@ -253,6 +253,21 @@ def _diversity(feats, strata, quotas, seed, window: int = 400) -> list[str]:
     return chosen
 
 
+def stratified_sample(feats: dict[str, dict[str, Any]], n: int, seed: int, salt: str,
+                      cuts: list[int] | None = None) -> list[str]:
+    """Proportional stratified random sample using the shared select-v2 strata.
+    Returned in a seeded random order (stable for a given seed/salt)."""
+    cuts = cuts or length_bins([f["rendered_total"] for f in feats.values()])
+    strata: dict[str, list[str]] = defaultdict(list)
+    for sid, f in feats.items():
+        strata[stratum_key(f, cuts)].append(sid)
+    q = allocate({k: len(v) for k, v in strata.items()}, n)
+    picked = []
+    for k in sorted(strata):
+        picked += _seeded_order(strata[k], seed, f"{salt}|{k}")[: q[k]]
+    return _seeded_order(picked, seed, f"{salt}|final_order")
+
+
 def check_teacher_balance(subsets: dict[str, Subset], feats: dict[str, dict[str, Any]],
                           max_dev: float) -> dict[str, float]:
     pool = Counter(f["teacher"] for f in feats.values())

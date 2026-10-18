@@ -136,3 +136,45 @@ For token counting, the audit downloaded only Qwen `tokenizer.json` (11.4 MB, at
 - 177 tests pass, and 1 test is skipped (the Phase 3 metrics placeholder).
 
 **Not done:** no training, no Qwen weights, no Kaggle GPU use, no paid APIs, no synthetic teacher data.
+
+---
+
+## 2026-10-18 - Phase 2 approved with changes; Phase 3A built (Kaggle run pending)
+
+**Decisions:**
+
+- `schema_consistent_1k` is dropped; its manifest is kept.
+- The primary comparison is `random_1k` vs `diversity_1k`.
+- `random_3k` and `random_1k` for 3 epochs are follow-up runs.
+- 1,536 tokens is approved for the pilot, with consistent exclusion of longer records.
+- A small fixed validation sample is used first. The test split and BFCL are reserved.
+- The scope is single-call only.
+
+**Git:** Phase 2 was committed as `7fdb2e8` on `research/phase1-audit`. The researcher is the sole author, and it was not pushed.
+
+**Phase 3A (not committed; awaiting the Kaggle run and review)**
+
+- Pins:
+  - Kaggle: transformers 5.18.0, peft 0.21.2, accelerate 1.15.0, bitsandbytes 0.50.2, tokenizers 0.23.3; torch is Kaggle's preinstalled build.
+  - Local: CPU torch 2.14.1 is used for mechanics tests only.
+- Under transformers 5.18 the template sha is identical to the Phase 2 manifest, and the rendered lengths of all 200 bundle records are identical.
+- Code:
+  - `train.py`: 4-bit NF4, fp16, LoRA on 7 projection modules, paged AdamW 8-bit, monitor callback, NaN stop, interrupt/resume.
+  - `infer.py`: greedy, left-padded generation.
+  - `evaluate.py`: defensive parser and metrics.
+  - `hardware.py`: preflight.
+  - `phase3a.py`: orchestration and report.
+  - `kaggle_export.py`: the bundle.
+  - Notebook rebuilt for MODE preflight / format_check / baseline / phase3a.
+- Bundle:
+  - 100 pilot TRAIN records (label_status: 96 valid, 3 schema_conflict, 1 ambiguous);
+  - 100 fixed VALIDATION records (99 valid, 1 schema_conflict);
+  - 20 format-check IDs.
+- Tests: 199 passed, including CPU mechanics on a tiny randomly initialised Qwen3 model (no real weights):
+  - loss mask;
+  - padding mask;
+  - **interrupt + resume into a fresh model reproduces uninterrupted LoRA weights**;
+  - adapter save/reload;
+  - NaN stop;
+  - preflight failure without a GPU or with too little memory.
+- **NOT yet measured** (requires the Kaggle run): GPU memory, training speed, baseline accuracy, pilot results.

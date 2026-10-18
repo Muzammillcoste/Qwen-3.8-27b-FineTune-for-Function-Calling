@@ -2,7 +2,7 @@
 # Versions pinned to what was installed and tested in Phase 0 on Python 3.11.9 (Windows 11), 2026-10-18.
 PyYAML==6.0.3
 jsonschema==4.26.0
-huggingface_hub==2.2.0
+huggingface_hub==1.33.0   # <2.0 for Kaggle preinstalled datasets/gradio/diffusers; transformers needs >=1.31
 datasets==5.1.0
 tokenizers==0.23.3   # Phase 1 token-length audit (tokenizer.json only, no weights)
 pytest==9.1.1
@@ -10,5 +10,9 @@ ruff==0.17.1
 # Phase 2 (optional TF-IDF diversity) — not installed yet; pin when used:
 # scikit-learn
 # Phase 2 chat-template rendering (tokenizer files only, NO model weights, NO torch):
-transformers==5.20.1
+transformers==5.18.0   # same pin as Kaggle; template sha + render lengths verified identical to 5.20.1
 Jinja2==3.1.6
+# Phase 3A local CPU mechanics tests (tiny random model; NO real weights):
+peft==0.21.2
+accelerate==1.15.0
+# torch CPU build: pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu

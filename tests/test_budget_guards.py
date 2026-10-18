@@ -53,22 +53,37 @@ def test_no_committed_secrets():
     assert offenders == []
 
 
-def test_code_never_loads_model_weights_or_trains():
-    """Up to Phase 2 only TOKENIZER files may be fetched (AutoTokenizer / tokenizer.json)."""
-    pat = re.compile(r"AutoModel|\.train\(|Trainer\(|snapshot_download|safetensors|"
-                     r"BitsAndBytesConfig|peft")
-    offenders = [str(p) for p in (REPO_ROOT / "src").rglob("*.py") if pat.search(p.read_text())]
+WEIGHT_MODULES = {"train.py", "phase3a.py"}  # Phase 3A: GPU-only (Kaggle) model loading/training
+
+
+def test_model_weights_and_training_confined_to_phase3a_modules():
+    """Weights/training code may exist ONLY in train.py/phase3a.py, which run on a CUDA GPU
+    (Kaggle). Everything else may fetch tokenizer files only."""
+    pat = re.compile(r"AutoModel|Trainer\(|snapshot_download|BitsAndBytesConfig|from peft")
+    offenders = [p.name for p in (REPO_ROOT / "src").rglob("*.py")
+                 if p.name not in WEIGHT_MODULES and pat.search(p.read_text("utf-8"))]
     assert offenders == []
     for p in (REPO_ROOT / "src").rglob("*.py"):
+        if p.name in WEIGHT_MODULES:
+            continue
         for line in p.read_text("utf-8").splitlines():
             if "from_pretrained(" in line:
                 assert "AutoTokenizer" in line, f"{p.name}: non-tokenizer from_pretrained: {line}"
+    train_src = (REPO_ROOT / "src/tooldistill/train.py").read_text("utf-8")
+    assert 'device_map={"": 0}' in train_src  # quantized weights load only onto a CUDA device
+
+
+def test_phase3a_pipeline_requires_gpu_and_trains_only_pilot_data():
+    src = (REPO_ROOT / "src/tooldistill/phase3a.py").read_text("utf-8")
+    assert "preflight(str(out), require_gpu=True)" in src
+    # the only training input is `examples`, built from the pilot TRAIN file
+    assert "examples, rep[\"data_checks\"] = data_and_mask_checks(tok, pilot," in src
+    assert src.count("run_training(") == 2 and src.count("run_training(model, tok, examples") == 2
+    assert "train_random" not in src and "train_diversity" not in src  # no arm files loaded
 
 
 @pytest.mark.parametrize("module,fn", [
     ("quality", "score_quality"), ("diversity", "diversity_select"),
-    ("hardware", "preflight"), ("train", "train_adapter"),
-    ("infer", "generate"), ("evaluate", "evaluate_predictions"),
     ("bfcl_adapter", "run_bfcl_subset"), ("stats", "paired_bootstrap"),
 ])
 def test_later_phase_modules_refuse_to_run(module, fn):
@@ -79,7 +94,7 @@ def test_later_phase_modules_refuse_to_run(module, fn):
         getattr(mod, fn)()
 
 
-@pytest.mark.parametrize("cmd", ["export-kaggle", "kaggle-preflight",
+@pytest.mark.parametrize("cmd", ["kaggle-preflight",
                                  "train-adapter", "eval-adapter", "summarize-results"])
 def test_later_phase_cli_commands_exit_without_doing_work(cmd, capsys):
     assert main([cmd]) == 2

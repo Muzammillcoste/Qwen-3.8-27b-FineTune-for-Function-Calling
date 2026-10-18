@@ -221,6 +221,29 @@ def cmd_audit_selection(argv: list[str] | None = None) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ phase 3A
+
+
+def cmd_export_kaggle(argv: list[str] | None = None) -> int:
+    from .kaggle_export import export
+
+    ap = argparse.ArgumentParser(
+        prog="export_kaggle",
+        description="PHASE 3A: build the PRIVATE Kaggle data bundle (100 pilot TRAIN + 100 fixed "
+                    "VALIDATION examples) and the project source zip under data/kaggle_upload/.",
+    )
+    ap.add_argument("--config", default=DEFAULT_DATA_CONFIG)
+    ap.add_argument("--research-config", default="configs/research.yaml")
+    ap.add_argument("--train-config", default="configs/train_qlora.yaml")
+    ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--out", default="data/kaggle_upload")
+    args = ap.parse_args(argv)
+    res = export(load_yaml(args.config), load_yaml(args.research_config),
+                 load_yaml(args.train_config), args.seed, args.out)
+    _print(res)
+    return 0
+
+
 # ------------------------------------------------------------------ later phases
 
 
@@ -242,10 +265,11 @@ COMMANDS = {
     "prepare": cmd_prepare,
     "audit-data": cmd_audit_data,
     "audit-selection": cmd_audit_selection,
-    "export-kaggle": not_yet("export_kaggle", 3, "export Kaggle upload bundle"),
-    "kaggle-preflight": not_yet("kaggle_preflight", 3, "GPU/env preflight"),
-    "train-adapter": not_yet("train_adapter", 3, "QLoRA adapter training"),
-    "eval-adapter": not_yet("eval_adapter", 3, "adapter evaluation"),
+    "export-kaggle": cmd_export_kaggle,
+    "kaggle-preflight": not_yet("kaggle_preflight", 3,
+                                "use notebooks/kaggle_train_eval.ipynb with MODE='preflight'"),
+    "train-adapter": not_yet("train_adapter", 4, "1k/3k arm training (needs approval)"),
+    "eval-adapter": not_yet("eval_adapter", 4, "full held-out evaluation (needs approval)"),
     "summarize-results": not_yet("summarize_results", 5, "results summary"),
 }
 
