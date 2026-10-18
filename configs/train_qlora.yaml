@@ -1,0 +1,44 @@
+# QLoRA starting suggestions copied from master spec H1.
+# STATUS: UNVERIFIED against any pinned TRL/PEFT/transformers version. Phase 3 must map these to
+# real API arguments; do not pass keys blindly. No training is permitted before Phase 3/4 approval.
+model_name: Qwen/Qwen3-4B-Instruct-2507
+# Observed via HF API metadata 2026-10-18 (no weights downloaded): cdbee75f17c01a7cc42f958dc650907174af0554
+model_revision: PIN_AFTER_DOWNLOAD
+seed: 42
+method: qlora_sft
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_use_double_quant: true
+  bnb_4bit_compute_dtype: bfloat16_if_supported_else_float16
+lora:
+  r: 8
+  alpha: 16
+  dropout: 0.05
+  target_modules: all-linear   # verify module names; exclude output head
+training:
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 8
+  learning_rate: 0.0001
+  num_train_epochs: 1
+  max_seq_length: 1024
+  gradient_checkpointing: true
+  optimizer: paged_adamw_8bit
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  save_steps: 100
+  logging_steps: 10
+  eval_strategy: steps_or_epoch_as_supported_by_pinned_trl
+  packing: false
+  mixed_precision: auto
+  completion_only_loss: true
+pilot:
+  n_examples: 100
+  stop_if:
+    cuda_oom: true
+    broken_label_mask: true
+    unintended_truncation_rate_gt: 0.05
+inference:
+  do_sample: false
+  max_new_tokens: 256
+  batch_size: 1

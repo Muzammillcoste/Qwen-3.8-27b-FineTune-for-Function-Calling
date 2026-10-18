@@ -1,0 +1,14 @@
+# Kaggle GPU runtime requirements — NOT YET PINNED.
+# Phase 0 status: no compatibility check has been run on Kaggle. Do not install blindly.
+# Phase 3 must: (1) inspect preinstalled Kaggle versions, (2) test TRL/PEFT/transformers/bitsandbytes
+# API compatibility with the pinned Qwen tokenizer template, (3) pin exact versions here,
+# (4) never upgrade mid-study.
+#
+# transformers==TBD
+# trl==TBD
+# peft==TBD
+# bitsandbytes==TBD
+# accelerate==TBD
+# datasets==TBD
+PyYAML
+jsonschema

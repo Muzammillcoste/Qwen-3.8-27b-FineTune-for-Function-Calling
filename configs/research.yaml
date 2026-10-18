@@ -1,0 +1,37 @@
+# Research protocol parameters. Phase 0: definitions only; nothing here has been run.
+study:
+  title: >-
+    Quality and Diversity Versus Quantity in Small Language Model Tool-Calling Adaptation:
+    A Controlled Data-Selection Study
+  status: design_only
+  primary_seed: 42
+
+research_questions:
+  RQ1: Selection policy vs uniform sampling at equal N (1k).
+  RQ2: Diversity coverage beyond the quality heuristic at equal N.
+  RQ3: Carefully selected 1k vs random 3k from the same eligible pool (fixed-epoch).
+  RQ4: Persistence after token/step/runtime budget accounting.
+  RQ5: Whether independent human quality annotations predict gains.
+  RQ6: Generalization to internal held-out xLAM split and selected BFCL single-turn categories.
+
+quality_proxy:
+  score_version: null          # defined in Phase 2, frozen before any training
+  components:
+    - tool_identity_integrity
+    - argument_schema_validity
+    - grounding_signal         # noisy heuristic only
+    - consistency
+  recorded_separately:
+    - difficulty_complexity     # never treated as low quality automatically
+    - novelty_dedup
+
+feasibility_gate:
+  histogram_bins: 20
+  min_human_reviewed: 100
+  per_candidate_subset: 50
+  blind_to_subset: true
+  # Decision rule is a human decision; Codex must not auto-pass the gate.
+  auto_pass: false
+
+source_matching:
+  max_teacher_ratio_deviation: 0.02   # absolute, between arms; violations stop selection

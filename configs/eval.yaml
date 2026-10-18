@@ -1,0 +1,28 @@
+# Evaluation configuration. Phase 0: definitions only.
+internal:
+  split: test            # sealed until pipeline is stable; val used for development only
+  decoding: {do_sample: false, max_new_tokens: 256}
+  metrics:
+    - parse_rate
+    - tool_name_set_accuracy
+    - exact_structured_call_accuracy   # primary
+    - required_argument_correctness
+    - schema_valid_predicted_call_rate
+    - hallucinated_tool_call_rate
+    - latency_p50_p95
+  evaluation_version: null
+
+bfcl:
+  # Observed 2026-10-18 (metadata only): PyPI bfcl-eval 2026.3.23 (Apache-2.0);
+  # HF gorilla-llm/Berkeley-Function-Calling-Leaderboard sha 61fc0608cfd831fcfbbaa676ebdfef0ed963eeda.
+  # Upstream: https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard
+  package: bfcl-eval
+  package_version: null      # pin in Phase 3 after install + category enumeration
+  dataset_revision: null
+  categories: []             # enumerate from installed version; never hardcode guessed names
+  label: "BFCL subset (protocol/version/N must be stated); NOT an official leaderboard score"
+
+statistics:
+  paired_bootstrap_resamples: 10000
+  mcnemar: true
+  note: single training seed => intervals reflect test sampling only, not training variance

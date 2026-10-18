@@ -1,0 +1,40 @@
+.sf
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# Secrets — never commit tokens
+.env
+.env.*
+*.token
+.huggingface/
+
+# Data: never commit source data (gated, CC BY 4.0 with access conditions)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Training artifacts / adapters / checkpoints
+artifacts/**
+!artifacts/.gitkeep
+
+# Large generated outputs (tables/plots small enough may be force-added deliberately)
+results/predictions/**
+!results/predictions/.gitkeep
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
