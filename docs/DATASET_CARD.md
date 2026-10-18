@@ -43,7 +43,8 @@ The raw file has SHA256 `4ef5c6f0dc552f2231f93f5853a9ef431e9e806d7aa514d0f6b6156
 | single / multi-call (all) | 28,461 single; 31,539 multi (max 52 calls) |
 | no-call records | 0. **xLAM has no no-tool examples.** |
 | requiredness (362,482 params) | REQUIRED 0, OPTIONAL 270,314 (inferred), UNKNOWN 92,168. **No parameter declares `required`.** |
-| label status | valid 58,179 (96.97%), ambiguous 465 (0.78%), invalid 1,356 (2.26%) |
+| label status (validate-v3) | valid 58,179 (96.97%); schema_conflict 1,351 (2.25%; declared type vs supplied value, NOT a confirmed label error); ambiguous 465 (0.78%); invalid 5 (0.01%, spurious argument); strict JSON-Schema valid 97.74% |
+| primary pool (Phase 2) | TRAIN ∩ single-call ∩ non-duplicate ∩ rendered ≤ 1536 tokens = 22,476 records; held-out single-call val/test 2,811 / 2,813 |
 | default_type_mismatch | 63,361 params in 27,561 records (schema issue, not label) |
 | tokens (Qwen, raw segments) | total p50 427, p95 951, p99 1205, max 2598; 3.16% > 1024 |
 

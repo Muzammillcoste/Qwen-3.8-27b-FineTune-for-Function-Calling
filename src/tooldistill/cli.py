@@ -189,6 +189,38 @@ def cmd_audit_data(argv: list[str] | None = None) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ phase 2
+
+
+def cmd_audit_selection(argv: list[str] | None = None) -> int:
+    from .phase2 import render_phase2_md, run_phase2
+
+    ap = argparse.ArgumentParser(
+        prog="audit_selection",
+        description="PHASE 2: single-call pool, chat-template lengths, candidate subsets, "
+                    "comparison tables, blinded audit sample. No training; tokenizer files only.",
+    )
+    ap.add_argument("--config", default="configs/research.yaml")
+    ap.add_argument("--data-config", default=DEFAULT_DATA_CONFIG)
+    ap.add_argument("--seed", type=int, default=None)
+    ap.add_argument("--out-md", default="reports/phase2_selection.md")
+    ap.add_argument("--out-json", default="data/audits/phase2_analysis.json")
+    args = ap.parse_args(argv)
+    research = load_yaml(args.config)
+    data_cfg = load_yaml(args.data_config)
+    seed = args.seed if args.seed is not None else int(research["study"]["primary_seed"])
+    res = run_phase2(data_cfg, research, seed)
+    for path, text in ((args.out_md, render_phase2_md(res)),
+                       (args.out_json, json.dumps(res, indent=1, default=str) + "\n")):
+        p = resolve(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(text, "utf-8")
+    _print({"report": args.out_md, "schema_gate": res["schema_gate"],
+            "render_checks": res["render_checks"],
+            "arms": {k: v["n"] for k, v in res["manifests"].items()}})
+    return 0
+
+
 # ------------------------------------------------------------------ later phases
 
 
@@ -209,7 +241,7 @@ COMMANDS = {
     "download": cmd_download,
     "prepare": cmd_prepare,
     "audit-data": cmd_audit_data,
-    "audit-selection": not_yet("audit_selection", 2, "quality/selection feasibility audit"),
+    "audit-selection": cmd_audit_selection,
     "export-kaggle": not_yet("export_kaggle", 3, "export Kaggle upload bundle"),
     "kaggle-preflight": not_yet("kaggle_preflight", 3, "GPU/env preflight"),
     "train-adapter": not_yet("train_adapter", 3, "QLoRA adapter training"),

@@ -16,8 +16,8 @@ The canonical specification is [ToolDistill_Lab_Codex_Master_Spec_v2_Existing_Da
 | Phase | Scope | Status |
 |---|---|---|
 | 0 | Scaffold, normalization/validation/provenance/dedup/split code, fixtures, tests, docs | done (approved) |
-| 1 | Authorized download, full integrity, three-state requiredness, dedup, split, data audit | **done; awaiting human review** (`reports/phase1_audit.md`) |
-| 2 | Quality proxy, diversity, subsets, human audit gate | not started |
+| 1 | Authorized download, full integrity, three-state requiredness, dedup, split, data audit | done (accepted; branch `research/phase1-audit`) |
+| 2 | Single-call pool, chat-template lengths, candidate subsets, blinded audit design, eval/training plans | **done; awaiting human review** (`reports/phase2_selection.md`) |
 | 3 | Kaggle export, preflight, 100-example pilot | not started |
 | 4 | Approved adapter runs | not started |
 | 5 | Evaluation and report | not started |
@@ -55,6 +55,7 @@ python scripts/inspect_xlam.py --source Salesforce/xlam-function-calling-60k --s
 python scripts/download_xlam.py --config configs/data.yaml
 python scripts/prepare_dataset.py --config configs/data.yaml --seed 42
 python scripts/audit_dataset.py --config configs/data.yaml   # needs Qwen tokenizer.json only (~11 MB, no weights)
+python scripts/audit_selection.py --config configs/research.yaml   # Phase 2; tokenizer files only
 ```
 
 ## Pipeline order (mandatory, spec E5)
@@ -68,6 +69,8 @@ python scripts/audit_dataset.py --config configs/data.yaml   # needs Qwen tokeni
   - `src/tooldistill/inspection.py`: builds the inspection report.
   - `src/tooldistill/pipeline.py`: the prepare pipeline.
   - `src/tooldistill/audit.py` and `token_lengths.py`: the Phase 1 data audit (`scripts/audit_dataset.py`, `tests/test_audit.py`).
+  - `src/tooldistill/phase2.py`, `analysis.py`, `manual_audit.py`: Phase 2 orchestration, comparison tables and the blinded audit sample.
+  - Diversity selection lives in `select.py`. `diversity.py` and `quality.py` remain stubs; Option A has no quality score.
 - Added scripts:
   - `scripts/check_access.py`
   - `tests/fixtures/build_miniature_xlam.py`: the fixture generator.

@@ -9,5 +9,6 @@ pytest==9.1.1
 ruff==0.17.1
 # Phase 2 (optional TF-IDF diversity) — not installed yet; pin when used:
 # scikit-learn
-# Phase 3 chat-template tests (tokenizer only, NO model weights) — not installed yet:
-# transformers
+# Phase 2 chat-template rendering (tokenizer files only, NO model weights, NO torch):
+transformers==5.20.1
+Jinja2==3.1.6

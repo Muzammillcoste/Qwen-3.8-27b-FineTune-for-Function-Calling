@@ -1,12 +1,16 @@
-# Experiment matrix (spec G1). Each run = independent LoRA adapter from the same frozen base.
-# Never chain adapters or carry optimizer state between runs. No run has been executed.
+# Experiment matrix — Option A framing (approved 2026-10-18): data selection, diversity, coverage
+# and quantity. Each run = independent LoRA adapter from the same frozen base. Never chain adapters
+# or carry optimizer state between runs. No run has been executed.
+# Primary pool: TRAIN ∩ single-call ∩ non-duplicate. Final matrix is decided at the Phase 2 gate.
 runs:
-  base_0:            {n_train: 0,    rule: untuned base,                       status: planned, priority: 1, mandatory: true}
-  pilot_100:         {n_train: 100,  rule: feasibility pilot (not a finding),  status: planned, priority: 1, mandatory: true}
-  random_1k:         {n_train: 1000, rule: uniform from eligible train seed 42, status: planned, priority: 2, mandatory: true}
-  quality_1k:        {n_train: 1000, rule: frozen quality heuristic,           status: planned, priority: 2, mandatory: if_quality_gate_passes}
-  random_3k:         {n_train: 3000, rule: uniform from same eligible train,   status: planned, priority: 3, mandatory: if_affordable}
-  quality_diverse_1k: {n_train: 1000, rule: quality + diversity,               status: planned, priority: 4, mandatory: false}
+  base_0:               {n_train: 0,    rule: untuned base,                                status: planned, priority: 1}
+  pilot_100:            {n_train: 100,  rule: feasibility pilot (not a finding),           status: planned, priority: 1}
+  random_1k:            {n_train: 1000, rule: stratified random, nested in random_3k,      status: planned, priority: 2}
+  diversity_1k:         {n_train: 1000, rule: stratified greedy coverage,                  status: planned, priority: 2}
+  random_3k:            {n_train: 3000, rule: stratified random,                           status: planned, priority: 3}
+  schema_consistent_1k: {n_train: 1000, rule: random_1k order skipping schema-inconsistent, status: pending_gate, priority: 4}
+deferred:
+  label_noise_ablation: Option B — controlled label noise; NOT implemented, needs separate approval
 seeds:
   primary: 42
   extra_if_budget: [43, 44]

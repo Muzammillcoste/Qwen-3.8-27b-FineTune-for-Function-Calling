@@ -35,3 +35,32 @@ feasibility_gate:
 
 source_matching:
   max_teacher_ratio_deviation: 0.02   # absolute, between arms; violations stop selection
+
+# ----------------------------------------------------------------------------------------------
+# Phase 2 (approved 2026-10-18): Option A framing — data selection, diversity, coverage, quantity.
+# Option B (controlled label noise) is DEFERRED; not implemented.
+primary_pool:
+  splits: [train]                 # selection never sees val/test (enforced in select.build_pool)
+  call_structure: single_call     # multi-call records preserved, unused in the primary experiment
+  exclude: [exact_duplicate]
+  max_rendered_tokens: 1536      # proposed pilot max_seq_length; longer records would lose their target
+
+arms: [random_1k, schema_consistent_1k, diversity_1k, random_3k]
+stratify_by: [teacher_source, tools_bucket, args_bucket, rendered_length_tertile]
+
+schema_arm_gate:
+  # Keep schema_consistent_1k only if it differs from random_1k in >= this % of its examples.
+  # NOTE: set after Phase 1 had already shown ~2-3% schema-inconsistent records corpus-wide, so it
+  # is not a blind pre-registration. Raw counts are always reported alongside the verdict.
+  min_difference_pct: 5.0
+
+semantic_audit:
+  per_arm: 40                      # per 1k arm, proportional to teacher within the arm
+  diagnostic: {schema_conflict: 20, ambiguous: 10}   # blinded pool records outside the 1k arms
+
+compute:
+  per_device_batch: 1
+  grad_accum: 8
+  # ASSUMPTIONS ONLY (not measured). Replaced by the Phase 3 pilot measurement.
+  assumed_train_tokens_per_s: [150, 300, 600]
+  assumed_generate_tokens_per_s_batch1: [8, 15, 25]

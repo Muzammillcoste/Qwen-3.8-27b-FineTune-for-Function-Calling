@@ -1,40 +1,70 @@
-.sf
+.sf/
+.sfdx/
 
-# Python
+# ---------------------------------------------------------------- Python
 __pycache__/
 *.py[cod]
 *.egg-info/
-.venv/
-venv/
-.pytest_cache/
-.ruff_cache/
+.eggs/
 build/
 dist/
+.venv/
+.venv*/
+venv/
+env/
+.python-version
 
-# Secrets — never commit tokens
+# ---------------------------------------------------------------- tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.ipynb_checkpoints/
+.cache/
+**/.cache/
+
+# ---------------------------------------------------------------- secrets (never commit tokens)
 .env
 .env.*
 *.token
 .huggingface/
+kaggle.json
 
-# Data: never commit source data (gated, CC BY 4.0 with access conditions)
+# ---------------------------------------------------------------- data
+# Never commit source or derived xLAM data (gated, CC BY 4.0 with access conditions).
+# Directory skeleton is kept via .gitkeep files only.
 data/**
 !data/**/
 !data/**/.gitkeep
 
-# Training artifacts / adapters / checkpoints
+# ---------------------------------------------------------------- models / training outputs
 artifacts/**
 !artifacts/.gitkeep
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.onnx
+checkpoint-*/
+wandb/
+runs/
+mlruns/
+outputs/
+*.log
 
-# Large generated outputs (tables/plots small enough may be force-added deliberately)
+# Large generated outputs (small tables/plots may be force-added deliberately)
 results/predictions/**
 !results/predictions/.gitkeep
 
-# Notebook checkpoints
-.ipynb_checkpoints/
-
-# OS / editors
+# ---------------------------------------------------------------- OS / editors
 .DS_Store
 Thumbs.db
+desktop.ini
 .vscode/
 .idea/
+*.swp

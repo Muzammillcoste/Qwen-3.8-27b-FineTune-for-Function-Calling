@@ -25,10 +25,14 @@
 
 ## Phase 2 → Phase 3
 
-- [ ] Quality proxy frozen (`score_version`) before training.
-- [ ] Score distributions show meaningful spread, or the narrower framing is accepted.
-- [ ] ≥100 blinded human labels entered by a human; agreement analysed.
-- [ ] Teacher mix of the subsets is within tolerance; overlap and Jaccard between arms reported.
+- [ ] `reports/phase2_selection.md` reviewed: pool, truncation, comparison tables, balance (|SMD|), overlaps.
+- [ ] Schema-arm gate decided. The result is 4.3% differing (< 5%), and dropping the arm is recommended.
+- [ ] Final training matrix approved.
+- [ ] Epoch policy approved: primary is fixed 1 epoch; the secondary compute-matched run is 1k × 3 epochs vs 3k × 1 epoch.
+- [ ] 1,536-token pilot length and over-length eligibility rule approved.
+- [ ] Evaluation compute decided: batched generation, or a fixed evaluation subset chosen before any evaluation.
+- [ ] Blinded semantic audit: 148 items labelled by a human (sheet in `data/audits/semantic_audit/`); κ on ≥ 30 double-labelled items if a second annotator is available.
+- [ ] Phase 2 changes committed (on request).
 
 ## Phase 3 → Phase 4
 

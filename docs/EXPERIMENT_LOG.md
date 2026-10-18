@@ -105,3 +105,34 @@ For token counting, the audit downloaded only Qwen `tokenizer.json` (11.4 MB, at
 - Tokens (raw, before chat-template overhead): p95 is 951 and p99 is 1205. 3.16% of records exceed 1024 tokens.
 
 **No selection, no quality score, no Qwen weights, no training.**
+
+---
+
+## 2026-10-18 - Phase 1 accepted; Phase 1 follow-ups; Phase 2 (selection and preparation only)
+
+**Researcher decisions:**
+
+- Adopt Option A framing (data selection, diversity, coverage and quantity).
+- Defer Option B (label noise).
+- The primary experiment uses single-call records only.
+- Add `schema_argument_type_conflict`.
+- Create a git branch.
+
+**Phase 1 follow-ups (committed as `60bbe79` on `research/phase1-audit`; author: the researcher only; not pushed)**
+
+- Introduced `schema_argument_type_conflict` (validate-v3). Type disagreements are no longer confirmed label errors. The strict verdict is kept in `strict_schema_valid`, and the new label status is `schema_conflict`.
+- Re-audit results: 5 confirmed structural label errors (all spurious arguments, all Mixtral) and 1,351 schema-conflict records.
+- Records now carry `call_structure`, which distinguishes several calls in one response from multi-turn conversations. xLAM is entirely single-turn.
+
+**Phase 2 (not committed; awaiting review)**
+
+- Rendered 28,171 single-call records with the real Qwen template. Only tokenizer and config files were downloaded (15.9 MB), with no weights and no torch. The prompt is an exact token prefix in 28,171 of 28,171 records, and every call renders verbatim.
+- Truncation at 1024 tokens affects 6.8% of the train pool, at 1536 it affects 0.32%, and at 2048 it affects 0.05%. The 71 train records longer than 1536 were made ineligible before selection.
+- select-v1 balance diagnostics showed `diversity_1k` drifting on structured arguments and tool style. Strata were extended to 6 features (select-v2, 150 strata), using train-only information. After that, every |SMD| is at most 0.03.
+- **The schema arm fails the gate.** `schema_consistent_1k` differs from `random_1k` in only 43 of 1,000 records (4.3%), below the 5% threshold. Removing the arm is recommended.
+- `diversity_1k` vs `random_1k`: 756 vs 604 distinct functions, 4,192 vs 2,248 query word types, and pairwise query Jaccard 0.055 vs 0.074. These metrics are partly circular, because they are the features the arm optimizes.
+- The blinded audit sample has 148 items (3 arms × 40 + 30 diagnostic). The sheet and key are in `data/audits/semantic_audit/`.
+- Docs: `SELECTION_METHODS`, `SEMANTIC_AUDIT_PROTOCOL`, `EVALUATION_PLAN`, `TRAINING_PROTOCOL`.
+- 177 tests pass, and 1 test is skipped (the Phase 3 metrics placeholder).
+
+**Not done:** no training, no Qwen weights, no Kaggle GPU use, no paid APIs, no synthetic teacher data.

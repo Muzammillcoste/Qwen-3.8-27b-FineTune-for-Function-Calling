@@ -53,15 +53,21 @@ def test_no_committed_secrets():
     assert offenders == []
 
 
-def test_phase0_code_never_loads_model_weights_or_trains():
-    pat = re.compile(r"from_pretrained|\.train\(|Trainer\(|snapshot_download")
+def test_code_never_loads_model_weights_or_trains():
+    """Up to Phase 2 only TOKENIZER files may be fetched (AutoTokenizer / tokenizer.json)."""
+    pat = re.compile(r"AutoModel|\.train\(|Trainer\(|snapshot_download|safetensors|"
+                     r"BitsAndBytesConfig|peft")
     offenders = [str(p) for p in (REPO_ROOT / "src").rglob("*.py") if pat.search(p.read_text())]
     assert offenders == []
+    for p in (REPO_ROOT / "src").rglob("*.py"):
+        for line in p.read_text("utf-8").splitlines():
+            if "from_pretrained(" in line:
+                assert "AutoTokenizer" in line, f"{p.name}: non-tokenizer from_pretrained: {line}"
 
 
 @pytest.mark.parametrize("module,fn", [
-    ("quality", "score_quality"), ("diversity", "diversity_select"), ("select", "select_subsets"),
-    ("format_qwen", "render_example"), ("hardware", "preflight"), ("train", "train_adapter"),
+    ("quality", "score_quality"), ("diversity", "diversity_select"),
+    ("hardware", "preflight"), ("train", "train_adapter"),
     ("infer", "generate"), ("evaluate", "evaluate_predictions"),
     ("bfcl_adapter", "run_bfcl_subset"), ("stats", "paired_bootstrap"),
 ])
@@ -73,7 +79,7 @@ def test_later_phase_modules_refuse_to_run(module, fn):
         getattr(mod, fn)()
 
 
-@pytest.mark.parametrize("cmd", ["audit-selection", "export-kaggle", "kaggle-preflight",
+@pytest.mark.parametrize("cmd", ["export-kaggle", "kaggle-preflight",
                                  "train-adapter", "eval-adapter", "summarize-results"])
 def test_later_phase_cli_commands_exit_without_doing_work(cmd, capsys):
     assert main([cmd]) == 2
