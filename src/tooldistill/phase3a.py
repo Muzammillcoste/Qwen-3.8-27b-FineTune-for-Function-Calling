@@ -60,7 +60,16 @@ def render_report_md(rep: dict[str, Any]) -> str:
                  f"{rep['model_load']['vram_after_load_gb']} GB")
     rows = [("format_check (20 val, base)", "format_check"),
             ("baseline (100 val, base)", "baseline_val100"),
-            ("pilot adapter (100 val)", "pilot_val100")]
+            ("pilot adapter (100 val)", "pilot_val100"),
+            (f"{rep.get('run_id') or 'base'} on val_eval_400", "val_eval_400")]
+    tr = rep.get("training")
+    if tr:
+        L.append(f"- training ({rep.get('run_id')}): steps {tr['global_step']}/{tr['max_steps']} "
+                 f"(resumed: {tr['resumed']}), {tr['non_padding_tokens']} tokens "
+                 f"(supervised {tr['supervised_tokens']}) in {tr['train_seconds']} s = "
+                 f"**{tr['tokens_per_s']} tok/s**, **peak VRAM {tr['peak_vram_allocated_gb']} GB** "
+                 f"(reserved {tr['peak_vram_reserved_gb']}), train loss {tr['train_loss']:.4f}")
+        L.append(f"- losses: {tr['losses']}\n- grad norms: {tr['grad_norms']}")
     if any(k in rep for _, k in rows):
         L.append("\n| eval | exact acc | parse | tool name | schema-valid pred | hallucinated "
                  "| s/example | new tok/s |\n|---|---|---|---|---|---|---|---|")

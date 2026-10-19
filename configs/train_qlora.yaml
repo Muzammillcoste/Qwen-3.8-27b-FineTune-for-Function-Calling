@@ -34,6 +34,9 @@ training:                # transformers.TrainingArguments
   logging_steps: 1
   completion_only_loss: true          # labels = -100 on prompt + padding (format_qwen)
   attn_implementation: sdpa           # no FlashAttention-2 on sm_75
+checkpointing:
+  arm_save_steps: 25              # 125-step arms -> checkpoints at 25/50/75/100/125 (no effect on training math)
+frozen: true                      # Phase 3B: configuration frozen for random_1k / diversity_1k
 pilot:
   n_examples: 100
   interrupt_at_step: 6                # simulated session end -> resume test

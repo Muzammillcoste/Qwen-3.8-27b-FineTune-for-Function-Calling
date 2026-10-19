@@ -79,7 +79,28 @@ Stop and report. Do **not** change the model, sequence length, LoRA rank or batc
 | `NonFiniteLossError` | pilot | A NaN/Inf loss or gradient norm under fp16. Training stops and the steps are logged. |
 | pip resolver warnings | Cell 4 | Kaggle's preinstalled packages may complain. The pinned versions in `pip_freeze.txt` are what counts. |
 
-## 4. Later phases (not approved yet)
+## 4. Phase 3B/4 primary runs (prepared; run ONLY after approval)
+
+1. Rebuild the bundle locally: `python scripts/export_phase3b.py`. It adds the following to `data/kaggle_upload/data/` and refreshes `project_source.zip`:
+   - `val_eval_400.jsonl`
+   - `train_random_1k.jsonl`
+   - `train_diversity_1k.jsonl`
+   - an updated `manifest.json`
+
+   The sealed test set is **never** added.
+2. On Kaggle, create a **New Version** of each private dataset:
+   - **`tooldistill-data`:** upload all files from `data/kaggle_upload/data/`.
+   - **`tooldistill-project`:** upload the new zip.
+3. Import the new `notebooks/kaggle_train_eval.ipynb`, attach both datasets (latest versions), set GPU T4 x2 and Internet On, and restart the session.
+4. Run one job per session. In each session, edit Cell 1 and then Run All:
+   - `MODE="eval_base_val"`, `RUN_ID=None`
+   - `MODE="train_eval"`, `RUN_ID="random_1k"`
+   - `MODE="train_eval"`, `RUN_ID="diversity_1k"`
+
+   Each session writes `/kaggle/working/<MODE>_<RUN_ID>_outputs.zip`. Download it and unzip it into `results/phase4/`, which is gitignored.
+5. Locally, run `python scripts/summarize_results.py` with the three prediction files (see `reports/phase3b_readiness.md`).
+
+## 5. Later phases (not approved yet)
 
 - Train the 1k/3k arms one per session, using `RUN_ID`.
 - The notebook never loops over arms.

@@ -178,3 +178,38 @@ For token counting, the audit downloaded only Qwen `tokenizer.json` (11.4 MB, at
   - NaN stop;
   - preflight failure without a GPU or with too little memory.
 - **NOT yet measured** (requires the Kaggle run): GPU memory, training speed, baseline accuracy, pilot results.
+
+---
+
+## 2026-10-19 - Phase 3A results; Phase 3B prepared (primary runs NOT executed)
+
+**Phase 3A, measured on Kaggle** (`reports/phase3a_feasibility.md`)
+
+- Training at 246.5 tokens/s, with peak VRAM of 9.0 GB.
+- No NaN.
+- True resume into a fresh model worked.
+- Strict accuracy on the dev 100: base 82, pilot 77 (McNemar p = 0.0625). The pilot result is not a finding.
+
+**Git**
+
+- The researcher committed Phase 3A as `f87cb30`. That commit also contains `results/phase3a/`: the outputs zip with adapter weights, and the prediction files with validation text.
+- The researcher chose to leave the history as it is.
+- `.gitignore` now excludes results, zips, adapters, prediction files, extracted outputs and benchmark data.
+
+**Researcher decisions**
+
+- Keep the learning rate at 1e-4, with no sweep.
+- The primary runs are `random_1k` and `diversity_1k`, 1 epoch each.
+
+**Phase 3B (uncommitted)**
+
+- eval-v2 is frozen: strict primary; a schema-aware secondary metric (valid declared defaults only); McNemar as the decision test, with a paired bootstrap CI as descriptive.
+- The 18 dev mismatches were reviewed: 5 model / 4 label / 9 ambiguous. This is provisional.
+- `val_eval_400` is fixed and disjoint from the dev 100. `test_eval_1000` is fixed and SEALED.
+- Both sets use one record per group and are group-disjoint from TRAIN.
+- The two arms are comparable: 125 steps each, tokens +0.2%, supervised tokens +3.4%, identical teacher share.
+- Coverage categories were precomputed.
+- `experiment.py` provides the Kaggle runner, `compare.py` the analysis, and `stats.py` the statistics.
+- The notebook was rebuilt for Phase 3B.
+- Estimated cost of the primary runs: about 3.1 GPU hours.
+- 215 tests pass.

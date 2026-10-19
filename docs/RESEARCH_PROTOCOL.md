@@ -91,5 +91,6 @@ If the quality separation is unclear, the study proceeds only as data-selection 
 - The two teachers are mixed.
 - The data may contain no no-tool examples, so abstention is not a trained capability.
 - BFCL may be contaminated in pretraining.
+- **Possible prior exposure to xLAM.** The base model may have seen xLAM or similar public function-calling data during pre- or post-training. This cannot be ruled out, and no claim of zero exposure is made. The base already scores 82% strict on the dev sample, so a ceiling effect is possible. See `docs/EVALUATION_SPEC.md` §7.
 - Free-GPU limits may force fewer seeds.
 - Domain shift between xLAM and BFCL.

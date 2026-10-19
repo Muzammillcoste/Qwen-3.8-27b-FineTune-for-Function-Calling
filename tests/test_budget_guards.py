@@ -53,7 +53,7 @@ def test_no_committed_secrets():
     assert offenders == []
 
 
-WEIGHT_MODULES = {"train.py", "phase3a.py"}  # Phase 3A: GPU-only (Kaggle) model loading/training
+WEIGHT_MODULES = {"train.py", "phase3a.py", "experiment.py"}  # GPU-only (Kaggle) loading/training
 
 
 def test_model_weights_and_training_confined_to_phase3a_modules():
@@ -84,7 +84,7 @@ def test_phase3a_pipeline_requires_gpu_and_trains_only_pilot_data():
 
 @pytest.mark.parametrize("module,fn", [
     ("quality", "score_quality"), ("diversity", "diversity_select"),
-    ("bfcl_adapter", "run_bfcl_subset"), ("stats", "paired_bootstrap"),
+    ("bfcl_adapter", "run_bfcl_subset"),
 ])
 def test_later_phase_modules_refuse_to_run(module, fn):
     import importlib
@@ -94,8 +94,7 @@ def test_later_phase_modules_refuse_to_run(module, fn):
         getattr(mod, fn)()
 
 
-@pytest.mark.parametrize("cmd", ["kaggle-preflight",
-                                 "train-adapter", "eval-adapter", "summarize-results"])
+@pytest.mark.parametrize("cmd", ["kaggle-preflight", "train-adapter", "eval-adapter"])
 def test_later_phase_cli_commands_exit_without_doing_work(cmd, capsys):
     assert main([cmd]) == 2
     assert "not implemented" in capsys.readouterr().err
@@ -114,8 +113,9 @@ def test_notebook_defaults_to_preflight_and_never_trains_by_default():
     nb = json.loads((REPO_ROOT / "notebooks" / "kaggle_train_eval.ipynb").read_text("utf-8"))
     src = "\n".join("".join(c["source"]) for c in nb["cells"] if c["cell_type"] == "code")
     assert re.search(r'^MODE\s*=\s*"preflight"', src, re.MULTILINE)
-    assert re.search(r'^RUN_ID\s*=\s*None', src, re.MULTILINE)
-    assert "for run_id in" not in src  # never loops over all training arms
+    assert re.search(r'^RUN_ID\s*=\s*("random_1k"|"diversity_1k"|None)', src, re.MULTILINE)
+    assert "for run_id in" not in src and "for RUN_ID in" not in src  # never loops over arms
+    assert 'MODE in {"preflight", "eval_base_val", "train_eval"}' in src  # no eval_test in notebook
 
 
 def test_fixture_is_small_and_labeled_synthetic():

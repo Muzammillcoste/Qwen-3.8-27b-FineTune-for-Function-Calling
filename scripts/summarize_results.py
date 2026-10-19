@@ -1,4 +1,4 @@
-"""Phase 5 stub: results summary."""
+"""Rescore raw predictions (eval-v2) and compare runs on a fixed eval set (aggregates only)."""
 
 import sys
 from pathlib import Path

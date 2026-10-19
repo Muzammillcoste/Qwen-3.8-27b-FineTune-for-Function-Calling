@@ -148,6 +148,28 @@ def test_adapter_save_and_reload_reproduces_outputs(tok, examples, tmp_path):
         assert torch.allclose(m(input_ids=x).logits, reloaded(input_ids=x).logits, atol=1e-5)
 
 
+def test_every_arm_starts_from_identical_lora_init():
+    """experiment.run seeds before add_lora: both arms get the same fresh adapter init."""
+    cfg = TrainConfig()
+    transformers.set_seed(cfg.seed)
+    a = _lora_state(add_lora(tiny_model(), cfg, quantized=False))
+    transformers.set_seed(cfg.seed)
+    b = _lora_state(add_lora(tiny_model(), cfg, quantized=False))
+    assert all(torch.equal(a[k], b[k]) for k in a)
+
+
+def test_arm_comparability_checks_with_real_tokenizer(tok, by_id_module):
+    from tooldistill.phase3b import arm_comparability
+
+    r = [by_id_module[i] for i in ("fixture:0", "fixture:33700")]
+    d = [by_id_module[i] for i in ("fixture:40003", "fixture:40002")]
+    res = arm_comparability(tok, {"random_1k": r, "diversity_1k": d}, 1536, 8)
+    assert res["arms"]["random_1k"]["optimizer_steps_1_epoch"] == 1
+    assert set(res["checks"]) == {"same_optimizer_steps", "total_tokens_within_5pct",
+                                  "supervised_tokens_within_5pct", "teacher_share_within_0.02",
+                                  "no_record_over_max_len"}
+
+
 def test_lora_targets_exclude_lm_head():
     cfg = TrainConfig()
     m = add_lora(tiny_model(), cfg, quantized=False)

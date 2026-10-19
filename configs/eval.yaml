@@ -1,4 +1,10 @@
 # Evaluation configuration. Phase 0: definitions only.
+test:
+  sealed: true          # test_eval_1000 may NOT be evaluated until the researcher unseals it
+  manifest: reports/eval_manifests/test_eval_1000.json
+validation:
+  manifest: reports/eval_manifests/val_eval_400.json
+  development_sample: phase3a val_sample_100 (used to design metrics; excluded from val_eval_400)
 internal:
   split: test            # sealed until pipeline is stable; val used for development only
   decoding: {do_sample: false, max_new_tokens: 256}
@@ -10,7 +16,11 @@ internal:
     - schema_valid_predicted_call_rate
     - hallucinated_tool_call_rate
     - latency_p50_p95
-  evaluation_version: null
+  evaluation_version: eval-v2   # frozen 2026-10-19; see docs/EVALUATION_SPEC.md
+  primary_metric: exact_structured_call_accuracy
+  secondary_metrics: [schema_aware_call_accuracy, tool_name_accuracy, argument_value_accuracy, parse_rate]
+  decision_test: mcnemar_exact
+  descriptive_interval: paired_bootstrap_95ci (10000 resamples, seed 42)
 
 bfcl:
   # Observed 2026-10-18 (metadata only): PyPI bfcl-eval 2026.3.23 (Apache-2.0);

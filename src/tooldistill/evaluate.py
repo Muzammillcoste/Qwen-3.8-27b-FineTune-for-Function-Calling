@@ -17,7 +17,7 @@ from .io import canonical_json
 from .schemas import NormalizedRecord
 from .validate import compiled_validator
 
-EVAL_VERSION = "eval-v1"
+EVAL_VERSION = "eval-v2"
 BLOCK = re.compile(r"<tool_call>(.*?)</tool_call>", re.DOTALL)
 END_TOKENS = ("<|im_end|>", "<|endoftext|>")
 
@@ -86,11 +86,49 @@ def call_key(c: dict[str, Any]) -> str:
     return canonical_json({"name": c["name"], "arguments": canonical_value(c["arguments"])})
 
 
+def valid_defaults(rec: NormalizedRecord, tool_name: str) -> dict[str, Any]:
+    """Declared defaults that are VALID under their own declared parameter type.
+
+    Only these justify "argument == default  <=>  argument omitted". Excluded (never coerced):
+    defaults with a type mismatch (e.g. "10" for an integer), unconstrained parameters, and
+    defaults that differ between same-named tool declarations.
+    """
+    found: list[dict[str, Any]] = []
+    for t in rec.tools:
+        fn = t["function"]
+        if fn["name"] != tool_name:
+            continue
+        d = {}
+        for p, ps in fn["parameters"].get("properties", {}).items():
+            if "default" not in ps:
+                continue
+            c = {k: v for k, v in ps.items() if k not in ("default", "description")}
+            if not c:
+                continue
+            v, _ = compiled_validator(c)
+            if v is not None and v.is_valid(ps["default"]):
+                d[p] = ps["default"]
+        found.append(d)
+    if not found:
+        return {}
+    first = found[0]
+    return {k: v for k, v in first.items()
+            if all(k in o and canonical_value(o[k]) == canonical_value(v) for o in found[1:])}
+
+
+def schema_aware_key(rec: NormalizedRecord, c: dict[str, Any]) -> str:
+    d = valid_defaults(rec, c["name"])
+    args = {k: v for k, v in c["arguments"].items()
+            if not (k in d and canonical_value(v) == canonical_value(d[k]))}
+    return canonical_json({"name": c["name"], "arguments": canonical_value(args)})
+
+
 @dataclass
 class ExampleScore:
     sample_id: str
     parse_ok: bool
     exact_match: bool
+    schema_aware_match: bool
     tool_names_match: bool
     n_expected: int
     n_predicted: int
@@ -112,6 +150,9 @@ def score_example(rec: NormalizedRecord, raw_output: str) -> ExampleScore:
     pred = parsed.calls
     available = {t["function"]["name"] for t in rec.tools}
     exact = parsed.parse_ok and Counter(map(call_key, pred)) == Counter(map(call_key, expected))
+    schema_aware = parsed.parse_ok and (
+        Counter(schema_aware_key(rec, c) for c in pred)
+        == Counter(schema_aware_key(rec, c) for c in expected))
     names = Counter(c["name"] for c in pred) == Counter(c["name"] for c in expected)
     halluc = any(c["name"] not in available for c in pred)
 
@@ -147,7 +188,8 @@ def score_example(rec: NormalizedRecord, raw_output: str) -> ExampleScore:
         cat = "wrong_argument_keys"
     else:
         cat = "wrong_argument_values"
-    return ExampleScore(rec.sample_id, parsed.parse_ok, exact, names, len(expected), len(pred),
+    return ExampleScore(rec.sample_id, parsed.parse_ok, exact, schema_aware, names,
+                        len(expected), len(pred),
                         halluc, schema_ok, keys_match, arg_ok, arg_tot,
                         parsed.text_outside_blocks, parsed.errors, pred, expected, cat)
 
@@ -162,6 +204,7 @@ def aggregate(scores: list[ExampleScore]) -> dict[str, Any]:
         "eval_version": EVAL_VERSION,
         "n": n,
         "exact_structured_call_accuracy": _rate(sum(s.exact_match for s in scores), n),
+        "schema_aware_call_accuracy": _rate(sum(s.schema_aware_match for s in scores), n),
         "parse_rate": _rate(sum(s.parse_ok for s in scores), n),
         "tool_name_accuracy": _rate(sum(s.tool_names_match for s in scores), n),
         "schema_valid_prediction_rate": _rate(sum(s.schema_valid_prediction for s in scores), n),

@@ -1,0 +1,38 @@
+{
+ "arms": {
+  "random_1k": {
+   "n": 1000,
+   "optimizer_steps_1_epoch": 125,
+   "total_tokens": 554547,
+   "supervised_tokens": 36969,
+   "max_tokens": 1469,
+   "deepseek_share": 0.585,
+   "distinct_functions": 604,
+   "mean_tools": 2.915,
+   "mean_args": 1.976
+  },
+  "diversity_1k": {
+   "n": 1000,
+   "optimizer_steps_1_epoch": 125,
+   "total_tokens": 555718,
+   "supervised_tokens": 38223,
+   "max_tokens": 1535,
+   "deepseek_share": 0.585,
+   "distinct_functions": 756,
+   "mean_tools": 2.897,
+   "mean_args": 1.991
+  }
+ },
+ "checks": {
+  "same_optimizer_steps": true,
+  "total_tokens_within_5pct": true,
+  "supervised_tokens_within_5pct": true,
+  "teacher_share_within_0.02": true,
+  "no_record_over_max_len": true
+ },
+ "all_pass": true,
+ "relative_diff": {
+  "total_tokens": 0.0021,
+  "supervised_tokens": 0.0339
+ }
+}

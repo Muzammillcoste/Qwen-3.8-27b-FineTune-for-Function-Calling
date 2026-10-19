@@ -57,9 +57,21 @@ mlruns/
 outputs/
 *.log
 
-# Large generated outputs (small tables/plots may be force-added deliberately)
-results/predictions/**
-!results/predictions/.gitkeep
+# Run outputs: Kaggle output zips, extracted predictions (contain xLAM text), adapters,
+# checkpoints. Lightweight AGGREGATE metrics + ID manifests live in reports/ (version-controlled).
+results/**
+!results/**/
+!results/**/.gitkeep
+*.zip
+**/pilot_adapter/
+**/adapters/
+**/predictions_*.jsonl
+**/extracted/
+
+# Benchmark data (BFCL etc.) is downloaded/extracted locally, never committed
+benchmark_data/
+**/BFCL_*.json
+**/possible_answer/
 
 # ---------------------------------------------------------------- OS / editors
 .DS_Store

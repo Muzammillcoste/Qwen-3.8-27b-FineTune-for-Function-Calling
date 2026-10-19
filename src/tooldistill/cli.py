@@ -244,6 +244,50 @@ def cmd_export_kaggle(argv: list[str] | None = None) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ phase 3B
+
+
+def cmd_export_phase3b(argv: list[str] | None = None) -> int:
+    from .phase3b import export_phase3b
+
+    ap = argparse.ArgumentParser(
+        prog="export_phase3b",
+        description="PHASE 3B: fixed val_eval_400 (bundled) + SEALED test_eval_1000 (local only), "
+                    "arm comparability checks, arm training files into the PRIVATE Kaggle bundle.",
+    )
+    ap.add_argument("--config", default=DEFAULT_DATA_CONFIG)
+    ap.add_argument("--research-config", default="configs/research.yaml")
+    ap.add_argument("--train-config", default="configs/train_qlora.yaml")
+    ap.add_argument("--seed", type=int, default=42)
+    args = ap.parse_args(argv)
+    res = export_phase3b(load_yaml(args.config), load_yaml(args.research_config),
+                         load_yaml(args.train_config), args.seed)
+    _print(res)
+    return 0 if res["arm_comparability"]["all_pass"] else 1
+
+
+def cmd_summarize_results(argv: list[str] | None = None) -> int:
+    from .compare import compare, render_md
+
+    ap = argparse.ArgumentParser(
+        prog="summarize_results",
+        description="Rescore raw predictions (eval-v2) and compare runs on one fixed eval set. "
+                    "Example: --run base=results/base/predictions_base_val400.jsonl "
+                    "--run random_1k=... --run diversity_1k=...",
+    )
+    ap.add_argument("--run", action="append", required=True, help="name=path/to/predictions.jsonl")
+    ap.add_argument("--evalset", default="data/kaggle_upload/data/val_eval_400.jsonl")
+    ap.add_argument("--manifest", default="reports/eval_manifests/val_eval_400.json")
+    ap.add_argument("--out", default="reports/phase4_val400_comparison")
+    args = ap.parse_args(argv)
+    runs = {k: resolve(v) for k, v in (r.split("=", 1) for r in args.run)}
+    res = compare(runs, resolve(args.evalset), resolve(args.manifest))
+    resolve(args.out + ".json").write_text(json.dumps(res, indent=1) + "\n", "utf-8")
+    resolve(args.out + ".md").write_text(render_md(res), "utf-8")
+    print(render_md(res))
+    return 0
+
+
 # ------------------------------------------------------------------ later phases
 
 
@@ -270,7 +314,8 @@ COMMANDS = {
                                 "use notebooks/kaggle_train_eval.ipynb with MODE='preflight'"),
     "train-adapter": not_yet("train_adapter", 4, "1k/3k arm training (needs approval)"),
     "eval-adapter": not_yet("eval_adapter", 4, "full held-out evaluation (needs approval)"),
-    "summarize-results": not_yet("summarize_results", 5, "results summary"),
+    "export-phase3b": cmd_export_phase3b,
+    "summarize-results": cmd_summarize_results,
 }
 
 
