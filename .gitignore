@@ -80,3 +80,10 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# ---------------------------------------------------------------- local working notes (not part of the repo)
+ToolDistill_Lab_Codex_Master_Spec_v2_Existing_Data.md
+docs/REVIEW_CHECKLIST.md
+docs/PAPER_OUTLINE.md
+reports/study_report.md
+reports/fixture_inspection.md
