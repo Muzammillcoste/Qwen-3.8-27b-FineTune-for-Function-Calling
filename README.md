@@ -175,5 +175,6 @@ and `RUN_ID` in the first cell and run all. Step-by-step instructions are in
 - The internal test set is mostly in-distribution (only 2.9% of test calls use a function
   absent from the training pool). Generalization to unseen tools depends on the BFCL evaluation.
 
-Full protocol: [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md). Running log of decisions:
-[docs/EXPERIMENT_LOG.md](docs/EXPERIMENT_LOG.md).
+Full protocol: [docs/RESEARCH_PROTOCOL.md](docs/RESEARCH_PROTOCOL.md). Original study design:
+[docs/STUDY_DESIGN.md](docs/STUDY_DESIGN.md) (code comments cite its sections as "spec E5", "spec K", ...).
+Running log of decisions: [docs/EXPERIMENT_LOG.md](docs/EXPERIMENT_LOG.md).

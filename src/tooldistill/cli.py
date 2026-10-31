@@ -297,7 +297,7 @@ def not_yet(prog: str, phase: int, description: str):
         ap.add_argument("--config", default=None)
         ap.parse_known_args(argv)
         print(f"{prog}: scheduled for Phase {phase}; not implemented. Requires explicit human "
-              f"approval of Phase {phase} (master spec section K).", file=sys.stderr)
+              f"approval of Phase {phase} (spec section K, docs/STUDY_DESIGN.md).", file=sys.stderr)
         return 2
     return _cmd
 

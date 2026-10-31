@@ -1,7 +1,7 @@
 """Transparent quality-proxy scoring (tool identity, schema validity, grounding, consistency).
 
 Phase 2 module — NOT IMPLEMENTED in Phase 0. Calling it raises ``PhaseNotImplemented``.
-See master spec F1.
+See spec F1 (docs/STUDY_DESIGN.md).
 """
 
 from __future__ import annotations

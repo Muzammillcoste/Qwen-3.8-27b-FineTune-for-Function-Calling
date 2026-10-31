@@ -1,7 +1,7 @@
 """Bridge to the OFFICIAL BFCL evaluator (bfcl-eval); never a home-grown substitute.
 
 Phase 3 module — NOT IMPLEMENTED in Phase 0. Calling it raises ``PhaseNotImplemented``.
-See master spec B2, I3.
+See spec B2, I3 (docs/STUDY_DESIGN.md).
 """
 
 from __future__ import annotations

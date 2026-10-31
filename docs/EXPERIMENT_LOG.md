@@ -132,7 +132,7 @@ For token counting, the audit downloaded only Qwen `tokenizer.json` (11.4 MB, at
 - **The schema arm fails the gate.** `schema_consistent_1k` differs from `random_1k` in only 43 of 1,000 records (4.3%), below the 5% threshold. Removing the arm is recommended.
 - `diversity_1k` vs `random_1k`: 756 vs 604 distinct functions, 4,192 vs 2,248 query word types, and pairwise query Jaccard 0.055 vs 0.074. These metrics are partly circular, because they are the features the arm optimizes.
 - The blinded audit sample has 148 items (3 arms × 40 + 30 diagnostic). The sheet and key are in `data/audits/semantic_audit/`.
-- Docs: `SELECTION_METHODS`, `SEMANTIC_AUDIT_PROTOCOL`, `EVALUATION_PLAN`, `TRAINING_PROTOCOL`.
+- Docs: `SELECTION_METHODS`, `SEMANTIC_AUDIT_PROTOCOL`, `EVALUATION_DESIGN`, `TRAINING_PROTOCOL`.
 - 177 tests pass, and 1 test is skipped (the Phase 3 metrics placeholder).
 
 **Not done:** no training, no Qwen weights, no Kaggle GPU use, no paid APIs, no synthetic teacher data.

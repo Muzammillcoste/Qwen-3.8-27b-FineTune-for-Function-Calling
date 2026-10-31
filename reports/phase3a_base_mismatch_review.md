@@ -1,7 +1,7 @@
 # Phase 3A base-model mismatch review (dev sample, validation split)
 
 - **Scope.** The 18 strict-match failures of the untuned base model on the 100-example development sample.
-- **Status.** The classification is **provisional, by Claude**, and needs the researcher's confirmation.
+- **Status.** The classification is a **provisional first pass** and needs the researcher's confirmation.
 - **Rubric.** `docs/EVALUATION_SPEC.md` §5.
 - **Labels.** Never rewritten; scores use the original labels.
 

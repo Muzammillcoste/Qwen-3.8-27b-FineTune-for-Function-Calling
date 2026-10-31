@@ -13,5 +13,5 @@ class PhaseNotImplemented(NotImplementedError):
     def __init__(self, module: str, phase: int):
         super().__init__(
             f"{module} is scheduled for Phase {phase} and is not implemented yet. "
-            "It requires explicit human approval of that phase (see master spec section K)."
+            "It requires explicit human approval of that phase (see spec section K, docs/STUDY_DESIGN.md)."
         )

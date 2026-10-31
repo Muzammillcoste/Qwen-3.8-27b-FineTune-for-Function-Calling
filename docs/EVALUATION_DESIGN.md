@@ -1,4 +1,6 @@
-# Evaluation plan (Phase 2 design; nothing evaluated yet)
+# Evaluation design (Phase 2)
+
+> Written in Phase 2, before anything was evaluated. Internal scoring (§1) is superseded by the frozen [EVALUATION_SPEC.md](EVALUATION_SPEC.md) (`eval-v2`); the BFCL plan (§2) and compute notes (§3) still apply.
 
 ## 1. Internal held-out xLAM (primary)
 

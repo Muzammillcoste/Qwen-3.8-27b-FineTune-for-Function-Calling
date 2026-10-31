@@ -1,6 +1,6 @@
 # Research protocol
 
-**Status:** pre-registered design (Phase 0). No data has been processed and no model has been trained or evaluated. The authoritative source is the master spec v2.0. This document restates the binding decisions so a reviewer can check later phases against them.
+**Status:** pre-registered design (Phase 0). No data has been processed and no model has been trained or evaluated. The authoritative source is the study design spec v2.0 ([STUDY_DESIGN.md](STUDY_DESIGN.md)). This document restates the binding decisions so a reviewer can check later phases against them.
 
 ## 1. Title and framing
 

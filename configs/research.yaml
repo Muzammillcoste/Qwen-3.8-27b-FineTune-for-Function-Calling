@@ -30,7 +30,7 @@ feasibility_gate:
   min_human_reviewed: 100
   per_candidate_subset: 50
   blind_to_subset: true
-  # Decision rule is a human decision; Codex must not auto-pass the gate.
+  # Decision rule is a human decision; the pipeline must never auto-pass the gate.
   auto_pass: false
 
 source_matching:

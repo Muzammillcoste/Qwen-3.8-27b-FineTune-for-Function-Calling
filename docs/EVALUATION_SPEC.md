@@ -72,7 +72,7 @@ Failures are classified for interpretation. **Dataset labels are never rewritten
 | **Possible label error** | The reference itself is unsupported or invalid: an invented ID or placeholder not derivable from the query, a code expression instead of a value, or a format contradicting the tool's documented convention. |
 | **Genuinely ambiguous** | The query or tool under-specifies the answer and both forms are defensible: naming, casing or code conventions, precision of world-knowledge values, explicit vs omitted optional arguments, how free text is split across parameters. |
 
-Applied to the 18 base-model failures on the dev sample, the counts were 5 definite / 4 possible label / 9 ambiguous (`reports/phase3a_base_mismatch_review.md`). This classification is provisional, by Claude, and needs the researcher's confirmation.
+Applied to the 18 base-model failures on the dev sample, the counts were 5 definite / 4 possible label / 9 ambiguous (`reports/phase3a_base_mismatch_review.md`). This classification is a provisional first pass and needs the researcher's confirmation.
 
 **Interpretation:** strict exact match understates semantic correctness, and that applies equally to every arm. Comparisons are paired, so this mostly cancels in the arm contrast.
 
